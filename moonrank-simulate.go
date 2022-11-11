@@ -9,6 +9,21 @@ import (
 	"runtime"
 )
 
+type FilteredAttributes struct {
+	Value []string
+}
+
+func (f *FilteredAttributes) String() string {
+	return ""
+}
+
+func (f *FilteredAttributes) Set(s string) error {
+	f.Value = append(f.Value, s)
+	return nil
+}
+
+var filteredAttributes = FilteredAttributes{}
+
 var InputDir string
 var OutFile string
 var DupeOutFile string
@@ -17,6 +32,8 @@ func InitFlags() {
 	flag.StringVar(&InputDir, "i", "", "input directory containing *.json files")
 	flag.StringVar(&OutFile, "o", "", "rarity output as json file")
 	flag.StringVar(&DupeOutFile, "d", "", "duplicate output as json file")
+	flag.Var(&filteredAttributes, "filtered", "filtered attributes, can be specified N times")
+
 	flag.Parse()
 
 	if InputDir == "" {
@@ -42,7 +59,7 @@ func Process(fns []string) {
 	}
 
 	log.Printf("Process: %v metadata objects found.\n", len(mints))
-	sortedNfts, duplicates := RankRarity(mints, []string{})
+	sortedNfts, duplicates := RankRarity(mints, filteredAttributes.Value)
 	encoded, err := json.Marshal(&sortedNfts)
 	if err != nil {
 		log.Fatal(err)
