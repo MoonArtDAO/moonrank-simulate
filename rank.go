@@ -347,6 +347,7 @@ func RankRarity(nfts []Mint, inFilteredAttributes []string) (sortedNfts []Mint, 
 	for _, x := range dupesByMintAddr {
 		if len(x) > 1 {
 			totalDupes = totalDupes + len(x)
+			outDupes = append(outDupes, x)
 		}
 	}
 
